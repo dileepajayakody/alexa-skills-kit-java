@@ -1,0 +1,22 @@
+GetRepositoryIntent get list of my repository
+GetRepositoryIntent tell me the list of my repository
+GetRepositoryIntent list my repository
+
+GetRepositoryStatusIntent is {repo} private
+GetRepositoryStatusIntent is {repo} public
+GetRepositoryStatusIntent what is the status of {repo}
+GetRepositoryStatusIntent give me the status of {repo}
+GetRepositoryStatusIntent tell me the status of {repo}
+GetRepositoryStatusIntent get the status of {repo}
+
+GetPullUpdateIntent is there any updates in {repo}
+GetPullUpdateIntent check the {repo} for any updates
+GetPullUpdateIntent any new updates in {repo}
+
+GetIssueIntent is there any new issues in {repo}
+GetIssueIntent any new issues in {repo}
+GetIssueIntent check for any new issues in {repo}
+
+GetLastCommitIntent get the last commit of {repo}
+GetLastCommitIntent what is the last commit of {repo}
+GetLastCommitIntent tell me about the last commit of {repo}

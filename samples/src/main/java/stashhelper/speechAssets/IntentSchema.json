@@ -1,0 +1,26 @@
+{
+  "intents": [
+    {
+      "intent": "GetRepositoryIntent"
+    },
+    {
+      "intent": "GetRepositoryStatusIntent"
+    },
+    {
+      "intent": "GetPullUpdateIntent"
+    },
+    {
+      "intent": "GetIssueIntent"
+    },
+    {
+      "intent": "GetLastCommitIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    }
+    
+  ]
+}
