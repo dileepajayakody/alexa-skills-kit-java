@@ -1,6 +1,8 @@
-GetRepositoryIntent get list of my repository
-GetRepositoryIntent tell me the list of my repository
-GetRepositoryIntent list my repository
+GetRepositoryIntent get list of my repositories
+GetRepositoryIntent get the list of my repositories
+GetRepositoryIntent get a list of my repositories
+GetRepositoryIntent tell me the list of my repositories
+GetRepositoryIntent list my repositories
 
 GetRepositoryStatusIntent is {repo} private
 GetRepositoryStatusIntent is {repo} public
@@ -9,7 +11,7 @@ GetRepositoryStatusIntent give me the status of {repo}
 GetRepositoryStatusIntent tell me the status of {repo}
 GetRepositoryStatusIntent get the status of {repo}
 
-GetPullUpdateIntent is there any updates in {repo}
+GetPullUpdateIntent are there any updates in {repo}
 GetPullUpdateIntent check the {repo} for any updates
 GetPullUpdateIntent any new updates in {repo}
 
