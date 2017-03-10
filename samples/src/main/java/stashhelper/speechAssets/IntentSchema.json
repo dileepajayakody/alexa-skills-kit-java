@@ -4,16 +4,40 @@
       "intent": "GetRepositoryIntent"
     },
     {
-      "intent": "GetRepositoryStatusIntent"
+      "intent": "GetRepositoryStatusIntent",
+      "slots": [
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
     },
     {
-      "intent": "GetPullUpdateIntent"
+      "intent": "GetPullUpdateIntent",
+      "slots": [
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
     },
     {
-      "intent": "GetIssueIntent"
+      "intent": "GetIssueIntent",
+      "slots": [
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
     },
     {
-      "intent": "GetLastCommitIntent"
+      "intent": "GetLastCommitIntent",
+      "slots": [
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
     },
     {
       "intent": "AMAZON.HelpIntent"

@@ -80,6 +80,13 @@
       <artifactId>aws-java-sdk-dynamodb</artifactId>
       <version>1.9.40</version>
     </dependency>
+    <dependency>
+    <groupId>com.ccreanga.bitbucket</groupId>
+    <artifactId>bitbucket-rest-client</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/src/main/resources/bitbucket-rest-client-1.0.jar</systemPath>
+</dependency>
   </dependencies>
 
   <properties>
