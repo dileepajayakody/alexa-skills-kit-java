@@ -1,5 +1,7 @@
 package stashhelper;
 
+import java.util.Set;
+
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
@@ -13,6 +15,8 @@ import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
+import com.ccreanga.bitbucket.rest.client.ProjectClient;
+import com.ccreanga.bitbucket.rest.client.model.Repository;
 
 public class StashSpeechHandler implements Speechlet {
 	
@@ -71,6 +75,12 @@ public class StashSpeechHandler implements Speechlet {
 	
 	private SpeechletResponse getRepoList(){
 		String speechText = "Sorry get Repositroy is under construction";
+		
+		ProjectClient client = StashConfig.getClientFactory().getProjectClient();
+		Set<Repository> repos = client.getAllRepositories();
+		for (Repository repository : repos) {
+			String repoName = repository.getName();
+		}
 
         SimpleCard card = new SimpleCard();
         card.setTitle("GetRepository");
