@@ -74,12 +74,17 @@ public class StashSpeechHandler implements Speechlet {
 	
 	
 	private SpeechletResponse getRepoList(){
-		String speechText = "Sorry get Repositroy is under construction";
-		
+		String speechText = "";
 		ProjectClient client = StashConfig.getClientFactory().getProjectClient();
 		Set<Repository> repos = client.getAllRepositories();
+		
+		if(!repos.isEmpty()){
+			speechText="Your have "+repos.size()+" repositories in your stash. ";
 		for (Repository repository : repos) {
-			String repoName = repository.getName();
+			speechText += repository.getName();
+		}
+		}else{
+			speechText="You do not have any repositories";
 		}
 
         SimpleCard card = new SimpleCard();
