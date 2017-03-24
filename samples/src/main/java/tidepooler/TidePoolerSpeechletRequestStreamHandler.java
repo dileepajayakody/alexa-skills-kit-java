@@ -32,7 +32,7 @@ public class TidePoolerSpeechletRequestStreamHandler extends SpeechletRequestStr
          * Alexa Skill and put the relevant Application Ids in this Set.
          */
         supportedApplicationIds = new HashSet<String>();
-        supportedApplicationIds.add("amzn1.ask.skill.4b99fae0-6667-495f-8648-72bf3b483977");
+        // supportedApplicationIds.add("amzn1.echo-sdk-ams.app.[unique-value-here]");
     }
 
     public TidePoolerSpeechletRequestStreamHandler() {

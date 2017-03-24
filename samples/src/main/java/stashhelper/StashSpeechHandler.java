@@ -44,11 +44,8 @@ public class StashSpeechHandler implements Speechlet {
         	outputSpeech.setText("Goodbye");
         	return SpeechletResponse.newTellResponse(outputSpeech);
         }else{
-        	 throw new SpeechletException("Invalid Intent");
-         	
+             throw new SpeechletException("Invalid Intent");
         }
-        
-        
 		
 	
     }
@@ -82,13 +79,12 @@ public class StashSpeechHandler implements Speechlet {
 		Set<Repository> repos = client.getAllRepositories();
 		
 		if(!repos.isEmpty()){
-			String repoNonun= repos.size()==1?"repository": "repositories";
-			speechText="Your have "+repos.size()+" "+repoNonun+" in your stash. ";
+			speechText="Your have "+repos.size()+" repositories in your stash. ";
 		for (Repository repository : repos) {
 			speechText += repository.getName();
 		}
 		}else{
-			speechText="You do not have any repositories at the moment";
+			speechText="You do not have any repositories";
 		}
 
         SimpleCard card = new SimpleCard();
@@ -194,8 +190,5 @@ public class StashSpeechHandler implements Speechlet {
 
         return SpeechletResponse.newAskResponse(outputSpeech, reprompt);
     }
-	
-//	private SpeechletResponse getConfirmation(Intent intent){
-//		return newAskResponse("do you really want to continue", "do you really want to continue");
-//	}
+
 }
