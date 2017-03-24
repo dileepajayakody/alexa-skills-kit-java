@@ -179,9 +179,14 @@ public class StashSpeechHandler implements Speechlet {
 
 		if (projectKey != null && repoSlot != null) {
 			Optional<Repository> repo = client.getRepositoryBySlug(projectKey, repositoryName);
-			Repository repository = repo.get();
-			repoStatus = repository.getStatusMessage();
-			speechText = "The status of the repository is " + repoStatus;
+			if(repo.isPresent()){
+				Repository repository = repo.get();
+				repoStatus = repository.getStatusMessage();
+				speechText = "The status of the repository is " + repoStatus;
+				}else{
+					speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+				}
+			
 			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 			speech.setText(speechText);
 			SimpleCard card = new SimpleCard();
@@ -193,8 +198,18 @@ public class StashSpeechHandler implements Speechlet {
 			String projectName = (String) session.getAttribute(SESSION_PROJECT);
 			if (projectName != null) {
 				Optional<Repository> repo = client.getRepositoryBySlug(projectKey, repositoryName);
-				Repository repository = repo.get();
-				repoStatus = repository.getStatusMessage();
+				if(repo.isPresent()){
+					Repository repository = repo.get();
+					repoStatus = repository.getStatusMessage();
+					}else{
+						speechText =  "The status of the repository is " + repoStatus;
+					}
+				PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+				speech.setText(speechText);
+				SimpleCard card = new SimpleCard();
+				card.setTitle("GetStatus");
+				card.setContent(speechText);
+				return SpeechletResponse.newTellResponse(speech, card);
 			} else {
 				String repromptString = "Please give the project id of the repository to get the repository status";
 				PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
@@ -209,28 +224,52 @@ public class StashSpeechHandler implements Speechlet {
 				return SpeechletResponse.newAskResponse(speech, reprompt);
 			}
 
+		}else{
+			String repromptString = "Please try the project id and repository id to get the repository status";
+			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+			repromptSpeech.setText(repromptString);
+			Reprompt reprompt = new Reprompt();
+			reprompt.setOutputSpeech(repromptSpeech);
+
+			String speechString = "What is the project id?";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechString);
+			session.setAttribute(SESSION_REPOSITORY, repositoryName);
+			return SpeechletResponse.newAskResponse(speech, reprompt);
 		}
-		return null;
+		//return null;
 	}
 
 	private SpeechletResponse getRepoStateWithProjectId(Intent intent, Session session) {
 		Slot projSlot = intent.getSlot(PROJECT_SLOT);
 		String projectKey = projSlot.getValue();
+		String speechText="";
 		String repositoryName = (String) session.getAttribute(SESSION_REPOSITORY);
 		ProjectClient projectClient = StashConfig.getProjecttClient();
 		if (projectKey != null && repositoryName != null) {
 			Optional<Repository> repo = projectClient.getRepositoryBySlug(projectKey, repositoryName);
+			if(repo.isPresent()){
 			Repository repository = repo.get();
 			String repoStatus = repository.getStatusMessage();
+			speechText = "The status of the repository is " + repoStatus;
+			}else{
+				speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+			}
 			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-			String speechText = "The status of the repository is " + repoStatus;
+			
 			speech.setText(speechText);
 			SimpleCard card = new SimpleCard();
 			card.setTitle("GetStatus");
 			card.setContent(speechText);
 			return SpeechletResponse.newTellResponse(speech, card);
 		} else {
-			return null;
+			speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetStatus");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
 		}
 	}
 
