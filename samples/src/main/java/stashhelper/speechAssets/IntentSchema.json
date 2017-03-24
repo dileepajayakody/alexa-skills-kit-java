@@ -3,15 +3,45 @@
     {
       "intent": "GetRepositoryIntent"
     },
+    
+    {
+      "intent": "GetProjectsIntent"
+    },
+    
+    {
+      "intent": "GetProjectStatusIntent",
+      "slots": [
+      	{
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	}
+      ]
+     },  
+            
     {
       "intent": "GetRepositoryStatusIntent",
       "slots": [
+        {
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	},
         {
           "name" : "repo",
           "type": "LIST_OF_REPO"
         }
       ]
     },
+    
+    {
+      "intent": "GetRepositoryStatusWithProjectKeyIntent",
+      "slots": [
+      	{
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	}
+      ]
+    },
+     
     {
       "intent": "GetPullUpdateIntent",
       "slots": [
@@ -21,6 +51,7 @@
         }
       ]
     },
+    
     {
       "intent": "GetIssueIntent",
       "slots": [
@@ -30,6 +61,7 @@
         }
       ]
     },
+    
     {
       "intent": "GetLastCommitIntent",
       "slots": [
@@ -39,9 +71,11 @@
         }
       ]
     },
+    
     {
       "intent": "AMAZON.HelpIntent"
     },
+    
     {
       "intent": "AMAZON.StopIntent"
     }

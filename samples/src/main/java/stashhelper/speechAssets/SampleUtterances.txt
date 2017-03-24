@@ -4,12 +4,27 @@ GetRepositoryIntent get a list of my repositories
 GetRepositoryIntent tell me the list of my repositories
 GetRepositoryIntent list my repositories
 
+GetProjectsIntent get list of my projects
+GetProjectsIntent get the list of my projects
+GetProjectsIntent get a list of my projects
+GetProjectsIntent tell me the list of my projects
+GetProjectsIntent list my projects
+GetProjectsIntent what are my projects
+
+GetProjectStatusIntent what is the status of project {project}
+GetProjectStatusIntent is {project} public or personal
+GetProjectStatusIntent tell me the status of {project} 
+
 GetRepositoryStatusIntent is {repo} private
 GetRepositoryStatusIntent is {repo} public
-GetRepositoryStatusIntent what is the status of {repo}
+GetRepositoryStatusIntent what is the status of {repo} of project {project}
+GetRepositoryStatusIntent in the project {project} is repository {repo} public
 GetRepositoryStatusIntent give me the status of {repo}
-GetRepositoryStatusIntent tell me the status of {repo}
-GetRepositoryStatusIntent get the status of {repo}
+
+
+GetRepositoryStatusWithProjectKeyIntent {project}
+GetRepositoryStatusWithProjectKeyIntent the project is {project}
+
 
 GetPullUpdateIntent are there any updates in {repo}
 GetPullUpdateIntent check the {repo} for any updates
