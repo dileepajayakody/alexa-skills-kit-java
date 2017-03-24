@@ -13,18 +13,19 @@ GetProjectsIntent what are my projects
 
 GetProjectStatusIntent what is the status of project {project}
 GetProjectStatusIntent is {project} public or personal
-GetProjectStatusIntent tell me the status of {project} 
+GetProjectStatusIntent tell me the status of the project {project}
 
 GetRepositoryStatusIntent is {repo} private
 GetRepositoryStatusIntent is {repo} public
 GetRepositoryStatusIntent what is the status of {repo} of project {project}
 GetRepositoryStatusIntent in the project {project} is repository {repo} public
 GetRepositoryStatusIntent give me the status of {repo}
+GetRepositoryStatusIntent tell me the status of {repo}
+GetRepositoryStatusIntent get the status of {repo}
 
-
-GetRepositoryStatusWithProjectKeyIntent {project}
+GetRepositoryStatusWithProjectKeyIntent project key is {project}
 GetRepositoryStatusWithProjectKeyIntent the project is {project}
-
+GetRepositoryStatusWithProjectKeyIntent project id is {project}
 
 GetPullUpdateIntent are there any updates in {repo}
 GetPullUpdateIntent check the {repo} for any updates
@@ -33,7 +34,6 @@ GetPullUpdateIntent any new updates in {repo}
 GetIssueIntent is there any new issues in {repo}
 GetIssueIntent any new issues in {repo}
 GetIssueIntent check for any new issues in {repo}
-
 GetLastCommitIntent get the last commit of {repo}
 GetLastCommitIntent what is the last commit of {repo}
 GetLastCommitIntent tell me about the last commit of {repo}

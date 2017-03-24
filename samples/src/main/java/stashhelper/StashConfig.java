@@ -34,6 +34,9 @@ public class StashConfig {
 		return projectClient;
 	}
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		ProjectClient client = getClientFactory().getProjectClient();
 		Set<Repository> repos = client.getAllRepositories();
@@ -48,8 +51,10 @@ public class StashConfig {
 			System.out.println("Project id : " + project.getId() + " name : " + project.getName() + " key : " + project.getKey());
 			
 		}
+		System.out.println("the status of the project example : " + client.getProjectByKey("EX").get().getName());
+		
 		//test with project key and repo name
-		Optional<Repository>  repo = client.getRepositoryBySlug("example", "solr");
+		Optional<Repository>  repo = client.getRepositoryBySlug("ex", "solr");
 		Repository repository = repo.get();
 		System.out.println("The repository : " + repository.getName() + "is : " + repository.getStatusMessage());
 		

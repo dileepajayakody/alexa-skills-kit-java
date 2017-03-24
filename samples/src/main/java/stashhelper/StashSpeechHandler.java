@@ -145,7 +145,7 @@ public class StashSpeechHandler implements Speechlet {
 			for (Project project : projects) {
 				String projectKey = project.getKey();
 				String projectName = project.getName();
-				if (projectKeyValue.equalsIgnoreCase(projectKey) || projectKeyValue.equalsIgnoreCase(projectName)) {
+				if (projectKeyValue.equalsIgnoreCase(projectKey)) {
 					boolean isPersonalProject = project.isPersonal();
 					boolean isPublicProject = project.isPublic();
 					if (isPersonalProject) {
@@ -159,7 +159,7 @@ public class StashSpeechHandler implements Speechlet {
 
 			}
 		} else {
-			speechText = " The project key or name you gave doesn't match with any projects in bitbucket.";
+			speechText = " The project key you gave doesn't match with any projects in bitbucket.";
 		}
 
 		card.setContent(speechText);
