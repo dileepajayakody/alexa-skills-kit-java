@@ -24,7 +24,7 @@ public class StashSpeechHandler implements Speechlet {
 
 	private static final String REPO_SLOT = "repo";
 	private static final String PROJECT_SLOT = "project";
-	private static final String SESSION_PROJECT = "projectKey";
+	private static final String SESSION_PROJECT = "projectName";
 	private static final String SESSION_REPOSITORY = "repositoryName";
 
 	@Override
@@ -38,9 +38,9 @@ public class StashSpeechHandler implements Speechlet {
 		} else if ("GetRepositoryStatusIntent".equals(intentName)) {
 			return getRepoState(intent, session);
 		} else if ("GetProjectsIntent".equals(intentName)) {
-			return getProjectsList();
+			return getProjectsList(session);
 		} else if ("GetProjectStatusIntent".equals(intentName)) {
-			return getProjectStatus(intent, session);
+			return getProjectStatus(intent);
 		} else if ("GetRepositoryStatusWithProjectKeyIntent".equals(intentName)) {
 			return getRepoStateWithProjectId(intent, session);
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
@@ -82,7 +82,7 @@ public class StashSpeechHandler implements Speechlet {
 		if (!repos.isEmpty()) {
 			speechText = "Your have " + repos.size() + " repositories in your stash. ";
 			for (Repository repository : repos) {
-				speechText += repository.getName() + ", ";
+				speechText += repository.getName() + " ";
 
 			}
 		} else {
@@ -102,14 +102,14 @@ public class StashSpeechHandler implements Speechlet {
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
 
-	private SpeechletResponse getProjectsList() {
+	private SpeechletResponse getProjectsList(Session session) {
 		String speechText = "";
 		Set<Project> projects = StashConfig.getProjecttClient().getProjects();
 
 		if (!projects.isEmpty()) {
 			speechText = "Your have " + projects.size() + " projects in your stash. The projects include ";
 			for (Project project : projects) {
-				speechText += project.getName() + ", ";
+				speechText += project.getName() + " ";
 			}
 		} else {
 			speechText = "You do not have any projects";
@@ -127,35 +127,41 @@ public class StashSpeechHandler implements Speechlet {
 
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
-	
-	
-	private SpeechletResponse getProjectStatus(Intent intent, Session session) {
+
+	private SpeechletResponse getProjectStatus(Intent intent) {
 		Slot projSlot = intent.getSlot(PROJECT_SLOT);
 		String projectKeyValue = projSlot.getValue();
-
-		ProjectClient projectClient = StashConfig.getProjecttClient();
+		// since the project keys are alphanumeric keys, it might not match with
+		// alexa's voice service directly
+		// hence checking the project slot with both project_key and
+		// project_name
+		Set<Project> projects = StashConfig.getProjecttClient().getProjects();
 		String speechText = "";
+
 		SimpleCard card = new SimpleCard();
-
 		card.setTitle("GetStatus");
-		if (projectKeyValue != null) {
-			Project project = projectClient.getProjectByKey(projectKeyValue).get();
-			boolean isPersonalProject = project.isPersonal();
-			boolean isPublicProject = project.isPublic();
-			if (isPersonalProject) {
-				speechText = "The project " + project.getName() + " identified by project key " + project.getKey()
-						+ " is a personal project.";
-			} else if (isPublicProject) {
-				speechText = "The project " + project.getName() + " identified by project key " + project.getKey()
-						+ " is a public project.";
-			}
-			// for subsequent questions on this project, add project key to the
-			// session
-			session.setAttribute(SESSION_PROJECT, project.getKey());
 
+		if (projectKeyValue != null) {
+			for (Project project : projects) {
+				String projectKey = project.getKey();
+				String projectName = project.getName();
+				if (projectKeyValue.equalsIgnoreCase(projectKey)) {
+					boolean isPersonalProject = project.isPersonal();
+					boolean isPublicProject = project.isPublic();
+					if (isPersonalProject) {
+						speechText = "The project " + projectName + " identified by project key " + projectKey
+								+ " is a personal project.";
+					} else if (isPublicProject) {
+						speechText = "The project " + projectName + " identified by project key " + projectKey
+								+ " is a public project.";
+					}
+				}
+
+			}
 		} else {
 			speechText = " The project key you gave doesn't match with any projects in bitbucket.";
 		}
+
 		card.setContent(speechText);
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText);
@@ -233,25 +239,37 @@ public class StashSpeechHandler implements Speechlet {
 		}
 		//return null;
 	}
-	
+
 	private SpeechletResponse getRepoStateWithProjectId(Intent intent, Session session) {
 		Slot projSlot = intent.getSlot(PROJECT_SLOT);
 		String projectKey = projSlot.getValue();
+		String speechText="";
 		String repositoryName = (String) session.getAttribute(SESSION_REPOSITORY);
 		ProjectClient projectClient = StashConfig.getProjecttClient();
 		if (projectKey != null && repositoryName != null) {
 			Optional<Repository> repo = projectClient.getRepositoryBySlug(projectKey, repositoryName);
+			if(repo.isPresent()){
 			Repository repository = repo.get();
 			String repoStatus = repository.getStatusMessage();
+			speechText = "The status of the repository is " + repoStatus;
+			}else{
+				speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+			}
 			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-			String speechText = "The status of the repository " + repository.getName() + " is " + repoStatus;
+			
 			speech.setText(speechText);
 			SimpleCard card = new SimpleCard();
 			card.setTitle("GetStatus");
 			card.setContent(speechText);
 			return SpeechletResponse.newTellResponse(speech, card);
 		} else {
-			return null;
+			speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetStatus");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
 		}
 	}
 
