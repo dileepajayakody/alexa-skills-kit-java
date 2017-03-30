@@ -27,6 +27,18 @@ GetRepositoryStatusWithProjectKeyIntent project key is {project}
 GetRepositoryStatusWithProjectKeyIntent the project is {project}
 GetRepositoryStatusWithProjectKeyIntent project id is {project}
 
+GetBranchesOfRepoIntent get me the branches of {repo} in {project}
+GetBranchesOfRepoIntent what are the branches of {repo} in {project}
+GetBranchesOfRepoIntent get me the branches of repository {repo} in project {project}
+GetBranchesOfRepoIntent what are the branches of repository {repo} in project {project}
+
+GetBranchesWithProjectKeyIntent the project is {project} and repository is {repo}
+GetBranchesWithProjectKeyIntent the project key is {project} and repository name is {repo}
+
+GetDefaultBranchIntent what is the default branch of repository {repo} in project {project}
+GetDefaultBranchIntent what is the default branch of {repo}
+
+
 GetPullUpdateIntent are there any updates in {repo}
 GetPullUpdateIntent check the {repo} for any updates
 GetPullUpdateIntent any new updates in {repo}

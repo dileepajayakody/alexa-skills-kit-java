@@ -1,6 +1,8 @@
 package stashhelper;
 
 import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import com.amazon.speech.slu.Intent;
@@ -17,6 +19,9 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.ccreanga.bitbucket.rest.client.ProjectClient;
+import com.ccreanga.bitbucket.rest.client.Range;
+import com.ccreanga.bitbucket.rest.client.model.Branch;
+import com.ccreanga.bitbucket.rest.client.model.Page;
 import com.ccreanga.bitbucket.rest.client.model.Project;
 import com.ccreanga.bitbucket.rest.client.model.Repository;
 
@@ -38,12 +43,18 @@ public class StashSpeechHandler implements Speechlet {
 		} else if ("GetRepositoryStatusIntent".equals(intentName)) {
 			return getRepoState(intent, session);
 		} else if ("GetProjectsIntent".equals(intentName)) {
-			return getProjectsList(session);
+			return getProjectsList();
 		} else if ("GetProjectStatusIntent".equals(intentName)) {
 			return getProjectStatus(intent);
 		} else if ("GetRepositoryStatusWithProjectKeyIntent".equals(intentName)) {
 			return getRepoStateWithProjectId(intent, session);
-		} else if ("AMAZON.HelpIntent".equals(intentName)) {
+		} else if ("GetBranchesOfRepoIntent".equals(intentName)) {
+			return getBranchesOfRepository(intent, session);
+		} else if ("GetBranchesWithProjectKeyIntent".equals(intentName)){
+			return getBranchesWithProjectId(intent, session);
+		} else if ("GetDefaultBranchIntent".equals(intentName)){
+			return getDefaultBranchOfRepository(intent, session);
+		}else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getHelp();
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -102,7 +113,7 @@ public class StashSpeechHandler implements Speechlet {
 		return SpeechletResponse.newTellResponse(speech, card);
 	}
 
-	private SpeechletResponse getProjectsList(Session session) {
+	private SpeechletResponse getProjectsList() {
 		String speechText = "";
 		Set<Project> projects = StashConfig.getProjecttClient().getProjects();
 
@@ -184,7 +195,7 @@ public class StashSpeechHandler implements Speechlet {
 				repoStatus = repository.getStatusMessage();
 				speechText = "The status of the repository is " + repoStatus;
 				}else{
-					speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+					speechText = "The project key you gave doesn't match with any projects in bitbucket";
 				}
 			
 			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
@@ -202,7 +213,7 @@ public class StashSpeechHandler implements Speechlet {
 					Repository repository = repo.get();
 					repoStatus = repository.getStatusMessage();
 					}else{
-						speechText =  "The status of the repository is " + repoStatus;
+						speechText =  "The status of the repository " + repositoryName + " is " + repoStatus;
 					}
 				PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 				speech.setText(speechText);
@@ -211,13 +222,13 @@ public class StashSpeechHandler implements Speechlet {
 				card.setContent(speechText);
 				return SpeechletResponse.newTellResponse(speech, card);
 			} else {
-				String repromptString = "Please give the project id of the repository to get the repository status";
+				String repromptString = "Please give the project key of the repository to get the repository status";
 				PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
 				repromptSpeech.setText(repromptString);
 				Reprompt reprompt = new Reprompt();
 				reprompt.setOutputSpeech(repromptSpeech);
 
-				String speechString = "What is the project id?";
+				String speechString = "What is the project key?";
 				PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 				speech.setText(speechString);
 				session.setAttribute(SESSION_REPOSITORY, repositoryName);
@@ -225,13 +236,13 @@ public class StashSpeechHandler implements Speechlet {
 			}
 
 		}else{
-			String repromptString = "Please try the project id and repository id to get the repository status";
+			String repromptString = "Please try the project key and repository name to get the repository status";
 			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
 			repromptSpeech.setText(repromptString);
 			Reprompt reprompt = new Reprompt();
 			reprompt.setOutputSpeech(repromptSpeech);
 
-			String speechString = "What is the project id?";
+			String speechString = "What is the project key?";
 			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 			speech.setText(speechString);
 			session.setAttribute(SESSION_REPOSITORY, repositoryName);
@@ -273,6 +284,149 @@ public class StashSpeechHandler implements Speechlet {
 		}
 	}
 
+	private SpeechletResponse getBranchesOfRepository(Intent intent, Session session) {
+		ProjectClient client = StashConfig.getProjecttClient();
+		Slot projSlot = intent.getSlot(PROJECT_SLOT);
+		Slot repoSlot = intent.getSlot(REPO_SLOT);
+		String repositoryName = repoSlot.getValue();
+		String projectKey = projSlot.getValue();
+		String speechText = "";
+		
+		if (projectKey != null && repoSlot != null) {
+			Page<Branch> branches = client.getBranches(projectKey, repositoryName,null, new Range(0, 10));
+			List<Branch> branchList = branches.getValues();
+			int branchNumber = branchList.size();
+			speechText += "The repository " + repositoryName + " in project " + projectKey + " has " + branchNumber + " branches.";
+			
+			for(Branch branch : branchList) {
+				String displayId = branch.getDisplayId();
+				speechText += displayId + ",";
+			}
+			
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetBranches");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+
+		} else if (projectKey == null && repoSlot != null) {
+			String projectName = (String) session.getAttribute(SESSION_PROJECT);
+			if (projectName != null) {
+				speechText += "The branches of repository " + repositoryName + " in project " + projectName + " include ";
+				Page<Branch> branches = client.getBranches(projectName, repositoryName,null, new Range(0, 10));
+				List<Branch> branchList = branches.getValues();
+				for(Branch branch : branchList) {
+					String displayId = branch.getDisplayId();
+					speechText += displayId + ",";
+				}
+				
+				PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+				speech.setText(speechText);
+				SimpleCard card = new SimpleCard();
+				card.setTitle("GetBranches");
+				card.setContent(speechText);
+				return SpeechletResponse.newTellResponse(speech, card);
+			}
+		}else{
+			String repromptString = "Please try the project id and repository id to get the repository status";
+			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+			repromptSpeech.setText(repromptString);
+			Reprompt reprompt = new Reprompt();
+			reprompt.setOutputSpeech(repromptSpeech);
+			String speechString = "What is the project key and repository name?";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechString);
+			return SpeechletResponse.newAskResponse(speech, reprompt);
+		}
+		return null;
+	}
+	
+	private SpeechletResponse getBranchesWithProjectId(Intent intent, Session session) {
+		Slot projSlot = intent.getSlot(PROJECT_SLOT);
+		String projectKey = projSlot.getValue();
+		Slot repoSlot = intent.getSlot(REPO_SLOT);
+		String repositoryName = repoSlot.getValue();
+		String speechText="";
+		ProjectClient projectClient = StashConfig.getProjecttClient();
+		if (projectKey != null && repositoryName != null) {
+			speechText += "The branches of repository " + repositoryName + " in project " + projectKey + " include ";
+			Page<Branch> branches = projectClient.getBranches(projectKey, repositoryName, null, new Range(0, 10));
+			List<Branch> branchList = branches.getValues();
+			for(Branch branch : branchList) {
+				String displayId = branch.getDisplayId();
+				speechText += displayId + ",";
+			}
+			
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetBranches");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+		} else {
+			speechText = "The project key or name you gave doesn't match with any projects in bitbucket";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetBranches");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+		}
+	}
+	
+	private SpeechletResponse getDefaultBranchOfRepository(Intent intent, Session session) {
+		ProjectClient client = StashConfig.getProjecttClient();
+		Slot projSlot = intent.getSlot(PROJECT_SLOT);
+		Slot repoSlot = intent.getSlot(REPO_SLOT);
+		String repositoryName = repoSlot.getValue();
+		String projectKey = projSlot.getValue();
+		String speechText = "";
+		
+		if (projectKey != null && repoSlot != null) {
+			Optional<Branch> defaultBranch = client.getDefaultBranch(projectKey, repositoryName);
+			Branch defBranch = defaultBranch.get();
+			speechText += "The default branch of repository " + repositoryName + " in project " + projectKey + " is " + defBranch.getDisplayId();
+			
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetDefaultBranch");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+
+		} else if (projectKey == null && repoSlot != null) {
+			String projectName = (String) session.getAttribute(SESSION_PROJECT);
+			if (projectName != null) {
+				speechText += "The branches of repository " + repositoryName + " in project " + projectName + " include ";
+				Page<Branch> branches = client.getBranches(projectName, repositoryName,null, new Range(0, 10));
+				List<Branch> branchList = branches.getValues();
+				for(Branch branch : branchList) {
+					String displayId = branch.getDisplayId();
+					speechText += displayId + ",";
+				}
+				
+				PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+				speech.setText(speechText);
+				SimpleCard card = new SimpleCard();
+				card.setTitle("GetDefaultBranch");
+				card.setContent(speechText);
+				return SpeechletResponse.newTellResponse(speech, card);
+			}
+		}else{
+			String repromptString = "Please try again with the correct project key and repository key to get the default branch";
+			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+			repromptSpeech.setText(repromptString);
+			Reprompt reprompt = new Reprompt();
+			reprompt.setOutputSpeech(repromptSpeech);
+			String speechString = "Please ask your question again with the correct project key and repository key";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechString);
+			return SpeechletResponse.newAskResponse(speech, reprompt);
+		}
+		return null;
+	}
+	
 	private SpeechletResponse getHelp() {
 		String speechText = "In Stash Helper you can request information about your Stash projects and repositories";
 

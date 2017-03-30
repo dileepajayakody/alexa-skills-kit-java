@@ -41,6 +41,48 @@
      	}
       ]
     },
+    
+    {
+      "intent": "GetBranchesOfRepoIntent",
+      "slots": [
+        {
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	},
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
+    },
+    
+    {
+      "intent": "GetBranchesWithProjectKeyIntent",
+      "slots": [
+        {
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	},
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
+    },
+    
+    {
+      "intent": "GetDefaultBranchIntent",
+      "slots": [
+        {
+      	"name" : "project",
+      	"type" : "LIST_OF_PROJECTS"
+     	},
+        {
+          "name" : "repo",
+          "type": "LIST_OF_REPO"
+        }
+      ]
+    },
      
     {
       "intent": "GetPullUpdateIntent",

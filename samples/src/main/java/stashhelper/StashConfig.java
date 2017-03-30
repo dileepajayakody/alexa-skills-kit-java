@@ -1,14 +1,21 @@
 package stashhelper;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import com.ccreanga.bitbucket.rest.client.ProjectClient;
+import com.ccreanga.bitbucket.rest.client.Range;
 import com.ccreanga.bitbucket.rest.client.http.BitBucketClientFactory;
 import com.ccreanga.bitbucket.rest.client.http.BitBucketCredentials;
+import com.ccreanga.bitbucket.rest.client.model.Branch;
+import com.ccreanga.bitbucket.rest.client.model.Page;
 import com.ccreanga.bitbucket.rest.client.model.Project;
 import com.ccreanga.bitbucket.rest.client.model.Repository;
+import com.ccreanga.bitbucket.rest.client.model.User;
+import com.ccreanga.bitbucket.rest.client.model.pull.PullRequest;
+import com.ccreanga.bitbucket.rest.client.model.pull.PullRequestState;
 
 public class StashConfig {
 
@@ -48,15 +55,27 @@ public class StashConfig {
 		Set<Project> projects = client.getProjects();
 		for (Iterator iterator = projects.iterator(); iterator.hasNext();) {
 			Project project = (Project) iterator.next();
-			System.out.println("Project id : " + project.getId() + " name : " + project.getName() + " key : " + project.getKey());
+			System.out.println("Project id : " + project.getId() + " name : " + project.getName() + " key : " + project.getKey());			
 			
 		}
-		System.out.println("the status of the project example : " + client.getProjectByKey("EX").get().getName());
+		System.out.println("the status of the project example : pubic : " + client.getProjectByKey("EX").get().isPublic());
 		
 		//test with project key and repo name
 		Optional<Repository>  repo = client.getRepositoryBySlug("ex", "solr");
-		Repository repository = repo.get();
-		System.out.println("The repository : " + repository.getName() + "is : " + repository.getStatusMessage());
+		
+		Page<Branch> branches = client.getBranches("EX", "beam",null, new Range(0, 100));
+
+		List<Branch> branchList = branches.getValues();
+		System.out.println("repo manifoldcf has branches : " + branchList.size() );
+		for(Branch branch : branchList) {
+			String displayId = branch.getDisplayId();
+			String branchId = branch.getId();
+			System.out.println("repo branches are : " + displayId + " id : " + branchId);
+			System.out.println("latest change of branch : " + displayId + " is " + branch.getLatestChangeset());			
+		}
+		
+		//Set<PullRequest> pullRequests = client.getPullRequests("ex", "manifoldcf", PullRequestState.OPEN, true, "refs/heads/master");
+		
 		
 	}
 
