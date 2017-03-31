@@ -54,7 +54,10 @@ public class StashSpeechHandler implements Speechlet {
 			return getBranchesWithProjectId(intent, session);
 		} else if ("GetDefaultBranchIntent".equals(intentName)){
 			return getDefaultBranchOfRepository(intent, session);
-		}else if ("AMAZON.HelpIntent".equals(intentName)) {
+		}else if("GetPullRequestIntent".equals(intentName)){
+			return getPullReguest(intent, session);
+		}
+		else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getHelp();
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
 			PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -328,6 +331,14 @@ public class StashSpeechHandler implements Speechlet {
 				card.setContent(speechText);
 				return SpeechletResponse.newTellResponse(speech, card);
 			}
+			speechText="Repository id, you gave does not match with any repository in bitbucket";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetBranches");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+			
 		}else{
 			String repromptString = "Please try the project id and repository id to get the repository status";
 			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
@@ -339,7 +350,7 @@ public class StashSpeechHandler implements Speechlet {
 			speech.setText(speechString);
 			return SpeechletResponse.newAskResponse(speech, reprompt);
 		}
-		return null;
+		
 	}
 	
 	private SpeechletResponse getBranchesWithProjectId(Intent intent, Session session) {
@@ -413,6 +424,14 @@ public class StashSpeechHandler implements Speechlet {
 				card.setContent(speechText);
 				return SpeechletResponse.newTellResponse(speech, card);
 			}
+			speechText="project id, you gave does not match with any repository in bitbucket";
+			PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+			speech.setText(speechText);
+			SimpleCard card = new SimpleCard();
+			card.setTitle("GetDefaultBranch");
+			card.setContent(speechText);
+			return SpeechletResponse.newTellResponse(speech, card);
+			
 		}else{
 			String repromptString = "Please try again with the correct project key and repository key to get the default branch";
 			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
@@ -424,7 +443,26 @@ public class StashSpeechHandler implements Speechlet {
 			speech.setText(speechString);
 			return SpeechletResponse.newAskResponse(speech, reprompt);
 		}
-		return null;
+		
+	}
+	
+	private SpeechletResponse getPullReguest(Intent intent,Session session){
+		
+		Slot repoSlot = intent.getSlot(REPO_SLOT);
+		String repositoryName = repoSlot.getValue();
+		String speechText="";
+		
+		if(repositoryName!=null&&repositoryName.equals("demo1")){
+			speechText="you have one open pull request in repository demo1";
+		}else{
+			speechText="you don't have any open pull request in "+repositoryName;
+		}
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(speechText);
+		SimpleCard card = new SimpleCard();
+		card.setTitle("GetPullRequest");
+		card.setContent(speechText);
+		return SpeechletResponse.newTellResponse(speech, card);
 	}
 	
 	private SpeechletResponse getHelp() {

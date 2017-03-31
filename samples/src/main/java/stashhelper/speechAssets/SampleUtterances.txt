@@ -49,3 +49,6 @@ GetIssueIntent check for any new issues in {repo}
 GetLastCommitIntent get the last commit of {repo}
 GetLastCommitIntent what is the last commit of {repo}
 GetLastCommitIntent tell me about the last commit of {repo}
+
+GetPullRequestIntent is there any pull request in {repo}
+GetPullRequestIntent does {repo} has any pull request

@@ -113,6 +113,15 @@
         }
       ]
     },
+    {
+    	"intent":"GetPullRequestIntent",
+    	"slots":[
+    		{
+    		 "name":"repo",
+    		 "type":"LIST_OF_REPO"	
+    		}
+    	]
+    },
     
     {
       "intent": "AMAZON.HelpIntent"
